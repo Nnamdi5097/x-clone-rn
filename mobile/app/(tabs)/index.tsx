@@ -1,6 +1,6 @@
-import PostComposer from "@/components/PostComposer";
-import PostsList from "@/components/PostsList";
-import SignOutButton from "@/components/SignOutButton";
+import PostComposer from "@/component/PostComposer";
+import PostsList from "@/component/PostsList";
+import SignOutButton from "@/component/SignOutButton";
 import { usePosts } from "@/hooks/usePosts";
 import { useUserSync } from "@/hooks/useUserSync";
 import { Ionicons } from "@expo/vector-icons";

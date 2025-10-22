@@ -1,6 +1,6 @@
-import EditProfileModal from "@/components/EditProfileModal";
-import PostsList from "@/components/PostsList";
-import SignOutButton from "@/components/SignOutButton";
+import EditProfileModal from "@/component/EditProfileModal";
+import PostsList from "@/component/PostsList";
+import SignOutButton from "@/component/SignOutButton";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { usePosts } from "@/hooks/usePosts";
 import { useProfile } from "@/hooks/useProfile";

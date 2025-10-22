@@ -1,4 +1,4 @@
-import { CONVERSATIONS, ConversationType } from "@/data/conversations";
+import { CONVERSATIONS, ConversationType } from "@/data/conversation";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
 import {
@@ -93,7 +93,7 @@ const MessagesScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
       >
-        {conversationsList.map((conversation) => (
+        {conversationsList.map((conversation ) => (
           <TouchableOpacity
             key={conversation.id}
             className="flex-row items-center p-4 border-b border-gray-50 active:bg-gray-50"
