@@ -1,4 +1,4 @@
-import { CONVERSATIONS, ConversationType } from "@/data/conversations";
+import  { CONVERSATIONS, ConversationType } from "@/data/conversations";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
 import {

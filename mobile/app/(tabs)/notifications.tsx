@@ -1,5 +1,5 @@
-import NoNotificationsFound from "@/components/NoNotificationsFound";
-import NotificationCard from "@/components/NotificationCard";
+import NoNotificationsFound from "@/component/NoNotificationsFound";
+import NotificationCard from "@/component/NotificationCard";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Notification } from "@/types";
 import { Feather } from "@expo/vector-icons";
