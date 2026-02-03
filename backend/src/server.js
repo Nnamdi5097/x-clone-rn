@@ -12,9 +12,10 @@ import { connectDB } from "./config/db.js";
 
 const app = express();
 
-// --- CLERK KEY SAFETY CHECK ---
-// This ensures that even if Vercel naming is tricky, we grab the right key.
-const CLERK_PUB_KEY = process.env.CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+// --- HARDCODED TEST ---
+// We are putting the key directly here to bypass Vercel variable issues.
+// Replace the text inside the quotes below with your actual pk_test_... key.
+const CLERK_PUB_KEY = "pk_test_dXNhYmxlLXNwb25nZS0xOS5jbGVyay5hY2NvdW50cy5kZXYk"; 
 const CLERK_SEC_KEY = process.env.CLERK_SECRET_KEY;
 
 app.use(cors({
@@ -26,7 +27,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// FIXED: Explicitly passing the keys with the safety variables defined above
+// Passing the hardcoded key directly
 app.use(clerkMiddleware({
   publishableKey: CLERK_PUB_KEY,
   secretKey: CLERK_SEC_KEY,
@@ -48,7 +49,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => res.send("Hello from server"));
+app.get("/", (req, res) => res.send("Hello from server (Hardcode Test)"));
 
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
@@ -68,9 +69,7 @@ const startServer = async () => {
     
     app.listen(PORT, () => {
       console.log("✅ Server running on PORT:", PORT);
-      // This will show in your Vercel Runtime Logs to confirm the fix
-      console.log("🔑 Clerk Pub Key Detected:", CLERK_PUB_KEY ? "YES" : "NO");
-      if (CLERK_PUB_KEY) console.log("📏 Pub Key Length:", CLERK_PUB_KEY.length);
+      console.log("🔑 Running Hardcode Test for Clerk Key");
     });
     
   } catch (error) {
@@ -82,7 +81,6 @@ const startServer = async () => {
 startServer();
 
 export default app;
-
 
 
   //const startServer = async () => {
