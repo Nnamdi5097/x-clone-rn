@@ -16,7 +16,7 @@ const app = express();
 // We are putting the key directly here to bypass Vercel variable issues.
 // Replace the text inside the quotes below with your actual pk_test_... key.
 const CLERK_PUB_KEY = "pk_test_dXNhYmxlLXNwb25nZS0xOS5jbGVyay5hY2NvdW50cy5kZXYk"; 
-const CLERK_SEC_KEY = process.env.CLERK_SECRET_KEY;
+const CLERK_SEC_KEY = "sk_test_YIxDCpgR8A1GX0gibQr281PHk1cFRlmtxb3VlymwWa";
 
 app.use(cors({
   origin: "*", 
