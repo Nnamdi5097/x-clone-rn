@@ -2,7 +2,6 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { clerkMiddleware, getAuth } from "@clerk/express";
-//import { clerkMiddleware } from "@clerk/express";
 import userRoutes from "./routes/user.route.js";
 import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
@@ -10,9 +9,13 @@ import notificationsRoutes from "./routes/notification.route.js";
 
 import { ENV } from "./config/env.js";
 import { connectDB } from "./config/db.js";
-// import { arcjetMiddleware } from "./middleware/arcjet.middleware.js"; // Keep disabled for now
 
 const app = express();
+
+// --- CLERK KEY SAFETY CHECK ---
+// This ensures that even if Vercel naming is tricky, we grab the right key.
+const CLERK_PUB_KEY = process.env.CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const CLERK_SEC_KEY = process.env.CLERK_SECRET_KEY;
 
 app.use(cors({
   origin: "*", 
@@ -23,31 +26,25 @@ app.use(cors({
 
 app.use(express.json());
 
-// CHANGE 1: Pass the keys EXPLICITLY to the middleware.
-// Clerk sometimes misses process.env when wrapped in custom config files.
+// FIXED: Explicitly passing the keys with the safety variables defined above
 app.use(clerkMiddleware({
-  publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
-  secretKey: process.env.CLERK_SECRET_KEY,
+  publishableKey: CLERK_PUB_KEY,
+  secretKey: CLERK_SEC_KEY,
 }));
 
-   
-   // ADD THIS DEBUGGING ROUTE immediately after app.use(clerkMiddleware...
+// DEBUGGING ROUTE
 app.get("/api/debug-auth", (req, res) => {
   const auth = getAuth(req);
-  console.log("Debug Auth Info:", auth);
   res.json({ 
-    message: "Check your server terminal", 
+    message: "Debugging Auth", 
     hasUserId: !!auth.userId,
-    raw: auth 
+    keyDetected: !!CLERK_PUB_KEY,
+    keyLength: CLERK_PUB_KEY ? CLERK_PUB_KEY.length : 0
   });
 });
 
-
-
-// DEBUGGING MIDDLEWARE: This will print to your terminal every time a request hits.
 app.use((req, res, next) => {
   console.log(`--- ${req.method} ${req.url} ---`);
-  console.log("Auth Header:", req.headers.authorization ? "Present" : "Missing");
   next();
 });
 
@@ -67,15 +64,14 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   try {
     await connectDB();
-    // CHANGE 2: Using standard process.env.PORT as fallback
-    const PORT = ENV.PORT || 5001; 
+    const PORT = process.env.PORT || 5001; 
     
-    app.listen(PORT, () => 
-      console.log("✅ Server is up and running on PORT:", PORT)
-    );
-    
-    // CHANGE 3: Verify keys are actually loaded in the terminal
-    console.log("🔑 Clerk Secret Key Loaded:", process.env.CLERK_SECRET_KEY ? "YES" : "NO");
+    app.listen(PORT, () => {
+      console.log("✅ Server running on PORT:", PORT);
+      // This will show in your Vercel Runtime Logs to confirm the fix
+      console.log("🔑 Clerk Pub Key Detected:", CLERK_PUB_KEY ? "YES" : "NO");
+      if (CLERK_PUB_KEY) console.log("📏 Pub Key Length:", CLERK_PUB_KEY.length);
+    });
     
   } catch (error) {
     console.error("❌ Failed to start server:", error.message);
@@ -86,8 +82,6 @@ const startServer = async () => {
 startServer();
 
 export default app;
-
-
 
 
 
