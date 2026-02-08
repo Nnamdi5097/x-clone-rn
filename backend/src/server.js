@@ -7,16 +7,12 @@ import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import notificationsRoutes from "./routes/notification.route.js";
 
-import { ENV } from "./config/env.js";
 import { connectDB } from "./config/db.js";
 
 const app = express();
 
-// --- HARDCODED TEST ---
-// We are putting the key directly here to bypass Vercel variable issues.
-// Replace the text inside the quotes below with your actual pk_test_... key.
-const CLERK_PUB_KEY = process.env.CLERK_PUBLISHABLE_KEY; 
-const CLERK_SEC_KEY = process.env.CLERK_SECRET_KEY;
+// Immediate DB Connection for Vercel stability
+connectDB();
 
 app.use(cors({
   origin: "*", 
@@ -27,29 +23,24 @@ app.use(cors({
 
 app.use(express.json());
 
-// Passing the hardcoded key directly
+// This will look for the keys you added in the Vercel Settings
 app.use(clerkMiddleware({
-  publishableKey: CLERK_PUB_KEY,
-  secretKey: CLERK_SEC_KEY,
+  publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+  secretKey: process.env.CLERK_SECRET_KEY,
 }));
 
-// DEBUGGING ROUTE
+// DEBUGGING ROUTE - Visit /api/debug-auth to see if keys are working
 app.get("/api/debug-auth", (req, res) => {
   const auth = getAuth(req);
   res.json({ 
-    message: "Debugging Auth", 
+    message: "Checking System Environment...", 
     hasUserId: !!auth.userId,
-    keyDetected: !!CLERK_PUB_KEY,
-    keyLength: CLERK_PUB_KEY ? CLERK_PUB_KEY.length : 0
+    publishableKeyDetected: !!process.env.CLERK_PUBLISHABLE_KEY,
+    secretKeyDetected: !!process.env.CLERK_SECRET_KEY,
   });
 });
 
-app.use((req, res, next) => {
-  console.log(`--- ${req.method} ${req.url} ---`);
-  next();
-});
-
-app.get("/", (req, res) => res.send("Hello from server (Hardcode Test)"));
+app.get("/", (req, res) => res.send("Server is live and running!"));
 
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
@@ -58,27 +49,15 @@ app.use("/api/notifications", notificationsRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
+  console.error("Internal Error:", err);
   res.status(500).json({ error: err.message || "Internal server error" });
 });
 
-const startServer = async () => {
-  try {
-    await connectDB();
-    const PORT = process.env.PORT || 5001; 
-    
-    app.listen(PORT, () => {
-      console.log("✅ Server running on PORT:", PORT);
-      console.log("🔑 Running Hardcode Test for Clerk Key");
-    });
-    
-  } catch (error) {
-    console.error("❌ Failed to start server:", error.message);
-    process.exit(1);
-  }
-};
-
-startServer();
+// For local testing
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => console.log(`✅ Local server: http://localhost:${PORT}`));
+}
 
 export default app;
 
