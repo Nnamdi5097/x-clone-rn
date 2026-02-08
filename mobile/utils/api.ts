@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 //For Web/Browser testing, localhost is fine. 
 // For physical devices, use your computer's IP (e.g., "http://192.168.1.5:5001/api")
-const API_BASE_URL = "http://localhost:5001/api";
+const API_BASE_URL = "https://x-clone-rn-uc1e.vercel.app/api";
 
 export const createApiClient = (getToken: () => Promise<string | null>): AxiosInstance => {
   const api = axios.create({ 
